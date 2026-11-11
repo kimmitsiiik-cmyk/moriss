@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Привет для Мориса</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+  
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: radial-gradient(circle, #ffffff 0%, #ffb6c1 50%, #ff1493 100%);
+      font-family: 'Montserrat', sans-serif;
+      overflow: hidden;
+      user-select: none;
+      transition: background 1.5s ease-in-out;
+    }
+
+    body.black-bg {
+      background: #000000;
+    }
+
+    .card {
+      position: relative;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(12px);
+      border-radius: 28px;
+      padding: 45px 40px;
+      box-shadow: 0 25px 50px rgba(255, 20, 147, 0.25), 
+                  inset 0 2px 5px rgba(255, 255, 255, 1);
+      border: 3px solid rgba(255, 255, 255, 0.8);
+      text-align: center;
+      max-width: 420px;
+      width: 85%;
+      will-change: transform;
+      transition: opacity 1.5s ease-in-out;
+    }
+
+    .card:hover {
+      box-shadow: 0 30px 60px rgba(255, 20, 147, 0.35), 
+                  inset 0 2px 8px rgba(255, 255, 255, 1);
+    }
+
+    h1 {
+      font-family: 'Orbitron', sans-serif;
+      color: #c71585;
+      font-size: 26px;
+      margin-top: 0;
+      margin-bottom: 20px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    }
+
+    .content-box {
+      opacity: 1;
+      transition: opacity 0.8s ease-in-out;
+    }
+
+    .fade-out {
+      opacity: 0;
+    }
+
+    p {
+      color: #2b2b2b;
+      font-size: 19px;
+      line-height: 1.6;
+      margin: 0 auto 25px auto;
+      font-weight: 600;
+      height: 65px; 
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .media-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 140px; 
+    }
+
+    .media-container video, 
+    .media-container img {
+      width: 140px;
+      height: auto;
+      border-radius: 12px;
+      outline: none;
+    }
+
+    .final-screen {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      transition: opacity 1.5s ease-in-out;
+    }
+
+    .final-screen video {
+      width: 180px;
+      height: auto;
+      border-radius: 16px;
+      outline: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card" id="card">
+    <h1>Моему другу Морису!</h1>
+    
+    <div class="content-box" id="contentBox">
+      <p id="textElement">Как ты поживаешь, Морис? Улыбаешься?</p>
+      
+      <div class="media-container" id="mediaContainer">
+        <video src="animation.gif.mp4" autoplay loop muted playsinline></video>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const card = document.getElementById('card');
+    const contentBox = document.getElementById('contentBox');
+    const textElement = document.getElementById('textElement');
+    const mediaContainer = document.getElementById('mediaContainer');
+    const body = document.body;
+
+    const slides = [
+      {
+        text: "Как ты поживаешь, Морис? Улыбаешься?",
+        mediaHtml: '<video src="animation.gif.mp4" autoplay loop muted playsinline></video>'
+      },
+      {
+        text: "Так приятно знать что ты есть.<br>Остальное неважно.",
+        mediaHtml: '<video src="moriss.gif.mp4" autoplay loop muted playsinline></video>'
+      }
+    ];
+
+    let currentSlide = 0;
+
+    function nextSlide() {
+      contentBox.classList.add('fade-out');
+
+      setTimeout(() => {
+        currentSlide++;
+        
+        if (currentSlide >= slides.length) {
+          clearInterval(slideInterval);
+          card.style.opacity = "0";
+          
+          setTimeout(() => {
+            body.classList.add('black-bg');
+            body.innerHTML = `
+              <div class="final-screen" id="finalScreen">
+                <video src="Heyu.gif.mp4" autoplay loop muted playsinline></video>
+              </div>
+            `;
+            
+            const finalScreen = document.getElementById('finalScreen');
+            
+            setTimeout(() => {
+              finalScreen.style.opacity = "1";
+            }, 50);
+
+            // Гифка играет 5 секунд на черном экране, после чего плавно затухает до полной темноты
+            setTimeout(() => {
+              finalScreen.style.opacity = "0";
+            }, 5000);
+
+          }, 1500);
+
+          return;
+        }
+
+        textElement.innerHTML = slides[currentSlide].text;
+        mediaContainer.innerHTML = slides[currentSlide].mediaHtml;
+        contentBox.classList.remove('fade-out');
+      }, 800);
+    }
+
+    let slideInterval = setInterval(nextSlide, 5000);
+
+    let time = 0;
+    function animate() {
+      if (!document.getElementById('card')) return;
+      time += 0.01;
+      const x = Math.sin(time) * 10;
+      const y = Math.cos(time * 0.7) * 8;
+      const rotate = Math.sin(time * 0.5) * 1.5;
+
+      card.style.transform = `translate(${x}px, ${y}px) rotate(${rotate}deg)`;
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+  </script>
+
+</body>
+</html>
